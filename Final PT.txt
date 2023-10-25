@@ -1,0 +1,81 @@
+class CustomerUser:
+    def __init__(self, name, address):
+        self.name = name
+        self.address = address
+
+    def __rep__(self):
+        return f"Lender Name: {self.name}\nAddress: {self.address}"
+
+class Loan:
+    def __init__(self, lender, amount, interest_rate):
+        self.lender = lender
+        self.amount = amount
+        self.interest_rate = interest_rate
+        return None 
+        
+    def calculate_monthlyPayment(self, months):
+        monthly_interest_rate = self.interest_rate / 12
+        monthlyPayment = (self.amount * monthly_interest_rate) / (1 - (1 + monthly_interest_rate) ** -months)
+        return monthlyPayment
+        
+class LoanManagementSystem:
+    def __init__(self):
+        self.lenders = {}
+        self.loans = []
+        self.interest_rate={}
+
+    def add_lender(self, name, address):
+        lender = CustomerUser(name, address)
+        self.lenders[name] = lender
+        return lender
+
+    def request_loan(self, lender_name, loan_amount, interest_rate):
+        if lender_name in self.lenders:
+            lender = self.lenders[lender_name]
+            loan = Loan(lender, loan_amount, interest_rate)
+            self.loans.append(loan)
+            return loan
+
+    def see_myloans(self):
+        myloan_info = []
+        for loan in self.loans:
+            monthlyPayment = loan.calculate_monthlyPayment(12)  # Assuming a 1-year loan term
+            myloan_info.append(f"\nCustomer Information:  \nLender: {loan.lender.name} \nLoan Amount: {loan.amount} \nMonthly Payment: {monthlyPayment:.2f}")
+        return myloan_info
+  
+if __name__ == "__main__":
+    loan_system = LoanManagementSystem()
+
+    while True:
+        print("\nLoan Management System")
+        print("1. Add Lender")
+        print("2. Request for Loan")
+        print("3. View lenders' information")
+        print("4. Exit")
+
+        select = input("Select number: ")
+
+        if select == "1":
+            name = input("Enter your full name: ")
+            address = input("Enter your address: ")
+            lender = loan_system.add_lender(name, address)
+            print(f"Lender '{lender.name}' added successfully.")
+
+        elif select== "2":
+            lender_name = input("Enter lender name: ")
+            loan_amount = float(input("Enter amount you want to loan: "))
+            interest_rate = float(input("Enter interest rate (should be in decimal): "))
+            loan = loan_system.request_loan(lender_name, loan_amount, interest_rate)
+            print(f"Loan request to '{lender.name}' completely processed.")
+
+        elif select == "3":
+            myloan_info = loan_system.see_myloans()
+            for info in myloan_info:
+                print(info)
+
+        elif select == "4":
+            print("Thank you and we will update you about your payment!!")
+            break
+
+        else:
+            print("Your input is invalid. Please try again.")
